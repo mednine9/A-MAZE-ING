@@ -1,0 +1,16 @@
+# Default A-Maze-ing Configuration File
+
+# Maze dimensions (WIDTH=columns, HEIGHT=rows)
+WIDTH=20
+HEIGHT=15
+
+# Entry and Exit coordinates in the format x,y (col,row)
+# Note: These are 0-indexed.
+ENTRY=0,0
+EXIT=19,14
+
+# The name of the file where the hex output will be written
+OUTPUT_FILE=maze.txt
+
+# Perfect maze flag (True or False)
+PERFECT=True
