@@ -1,5 +1,5 @@
 import sys
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 
 class ConfigParser:
     """Parses and validates the A-Maze-ing configuration file."""
@@ -12,6 +12,7 @@ class ConfigParser:
         self.exit: Tuple[int, int] = (0, 0)
         self.output_file: str = ""
         self.perfect: bool = False
+        self.seed: Optional[int] = None
 
     def parse(self) -> None:
         """Reads the file and extracts all configuration values."""
@@ -81,6 +82,8 @@ class ConfigParser:
                 self.perfect = False
             else:
                 raise ValueError("PERFECT must be strictly 'True' or 'False'.")
+            if "SEED" in data:
+                self.seed = int(data["SEED"])
 
         except ValueError as ve:
             self._fatal(f"Configuration Error: {ve}")

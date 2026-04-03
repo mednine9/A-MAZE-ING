@@ -197,10 +197,10 @@ class MazeGenerator:
         path.reverse()
 
         dir_map = {
-            (-1, 0): "⮝",
-            (1, 0): "⮟",
-            (0, 1): "⮞",
-            (0, -1): "⮜"
+            (-1, 0): "N",
+            (1, 0): "S",
+            (0, 1): "E",
+            (0, -1): "W"
         }
 
         for i in range(len(path)):
@@ -218,6 +218,29 @@ class MazeGenerator:
 
         return path
 
+    def save_to_file(self, filename: str, path_coords: list[Tuple[int, int]]) -> None:
+        try:
+            with open(filename, 'w') as f:
+                for row in self.gen_maze:
+                    line = "".join([cell.to_hex() for cell in row])
+                    f.write(line + "\n")
+                
+                f.write("\n")
+                
+                ent_r, ent_c = self.entrance
+                ext_r, ext_c = self.departure
+                f.write(f"{ent_c},{ent_r}\n")
+                f.write(f"{ext_c},{ext_r}\n")
+                
+                dir_map = {(-1, 0): "N", (1, 0): "S", (0, 1): "E", (0, -1): "W"}
+                path_str = ""
+                for i in range(len(path_coords) - 1):
+                    r, c = path_coords[i]
+                    nr, nc = path_coords[i+1]
+                    path_str += dir_map[(nr - r, nc - c)]
+                f.write(path_str + "\n")
+        except IOError as e:
+            print(f"File error: {e}")
 
 if __name__ == "__main__":
     print("=== MazeGenerator Test ===")
@@ -235,3 +258,4 @@ if __name__ == "__main__":
     print(f"Maze solved in {gen.benchmark['solution']:.4f} seconds")
     print(f"Path length: {len(path)}")
     print("Test completed.")
+
