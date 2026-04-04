@@ -13,7 +13,7 @@ class ConfigParser:
         self.exit: Tuple[int, int] = (0, 0)
         self.output_file: str = ""
         self.perfect: bool = False
-        self.seed: Optional[int] = None
+        self.seed: Optional[str] = None
 
     def parse(self) -> None:
         """Reads the file and extracts all configuration values."""
@@ -78,6 +78,20 @@ class ConfigParser:
             self.output_file = data["OUTPUT_FILE"]
             if not self.output_file:
                 raise ValueError("OUTPUT_FILE cannot be empty.")
+            forbidden_exacts = [
+                self.filename,
+                "Makefile",
+                ".gitignore",
+                "dependency_links.txt",
+                "PKG-INFO",
+                "SOURCES.txt",
+                "top_level.txt"
+            ]
+            if (self.output_file.endswith('.py')
+                    or self.output_file in forbidden_exacts):
+                raise ValueError(
+                    f"Security Error: OUTPUT_FILE cannot be a "
+                    f"protected project file ('{self.output_file}').")
 
             perfect_str = data["PERFECT"].lower()
             if perfect_str == 'true':
@@ -87,7 +101,7 @@ class ConfigParser:
             else:
                 raise ValueError("PERFECT must be strictly 'True' or 'False'.")
             if "SEED" in data:
-                self.seed = int(data["SEED"])
+                self.seed = data["SEED"].strip()
 
         except ValueError as ve:
             self._fatal(f"Configuration Error: {ve}")

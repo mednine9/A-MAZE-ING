@@ -98,7 +98,7 @@ class MazeGenerator:
                  width: int,
                  entrance: Tuple[int, int],
                  departure: Tuple[int, int],
-                 seed: Optional[int],
+                 seed: Optional[str],
                  perfect: bool):
         """Initializes the MazeGenerator with specified configurations.
 
@@ -138,6 +138,12 @@ class MazeGenerator:
 
         if not (self.width < 10 or self.height < 7):
             self._embed_42_pattern()
+            if self.gen_maze[ent_r][ent_c].is_ftwo:
+                raise ValueError("ENTRY coordinates overlap with "
+                                 "the embedded '42' pattern.")
+            if self.gen_maze[ext_r][ext_c].is_ftwo:
+                raise ValueError("EXIT coordinates overlap with "
+                                 "the embedded '42' pattern.")
         else:
             print(
                 "Error: Maze size is too small to "

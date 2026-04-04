@@ -23,7 +23,13 @@ def main() -> None:
         seed=parser.seed,
         perfect=parser.perfect
     )
-    generator.generate_maze()
+
+    try:
+        generator.generate_maze()
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
     path = generator.maze_solver()
 
     generator.save_to_file(parser.output_file, path)
