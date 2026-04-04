@@ -1,20 +1,24 @@
-# visualizer.py
 import sys
 from typing import Tuple
 from mazegen.maze_gen import MazeGenerator
 
-# Codes ANSI pour les couleurs
 RESET = "\033[0m"
-WALL_COLORS = ["\033[97m", "\033[94m", "\033[96m",
-               "\033[92m"]  # Blanc, Bleu, Cyan, Vert
-ENTRY_COLOR = "\033[95m"   # Magenta (Entrée)
-EXIT_COLOR = "\033[91m"    # Rouge (Sortie)
-PATH_COLOR = "\033[93m"    # Jaune Fluo (Chemin)
-PATTERN_COLOR = "\033[37m"  # Gris clair (Le 42)
+WALL_COLORS = ["\033[97m", "\033[94m", "\033[96m", "\033[92m"]
+ENTRY_COLOR = "\033[95m"
+EXIT_COLOR = "\033[91m"
+PATH_COLOR = "\033[93m"
+PATTERN_COLOR = "\033[37m"
 
 
 def print_maze(generator: MazeGenerator,
                show_path: bool, color_idx: int) -> None:
+    """Renders the maze in the terminal using ASCII blocks and ANSI colors.
+
+    Args:
+        generator (MazeGenerator): The maze object containing the grid data.
+        show_path (bool): Determines whether the solution path is displayed.
+        color_idx (int): The current index for rotating wall colors.
+    """
     h = generator.height * 2 + 1
     w = generator.width * 2 + 1
 
@@ -24,7 +28,6 @@ def print_maze(generator: MazeGenerator,
     wall_c = WALL_COLORS[color_idx % len(WALL_COLORS)]
     grid = generator.gen_maze
 
-    # 1. Creuser les passages et colorer le "42"
     for r in range(generator.height):
         for c in range(generator.width):
             dr = r * 2 + 1
@@ -55,7 +58,6 @@ def print_maze(generator: MazeGenerator,
                 if cell.east:
                     display[dr][dc + 1] = '  '
 
-    # 2. Ajouter l'Entrée, la Sortie et le Chemin
     for r in range(generator.height):
         for c in range(generator.width):
             dr = r * 2 + 1
@@ -67,11 +69,10 @@ def print_maze(generator: MazeGenerator,
                     display[dr][dc] = '██'
                     colors[dr][dc] = PATH_COLOR
 
-                # Relier au Nord
                 if cell.north and r > 0 and grid[r-1][c].is_path:
                     display[dr-1][dc] = '██'
                     colors[dr-1][dc] = PATH_COLOR
-                # Relier à l'Ouest
+
                 if cell.west and c > 0 and grid[r][c-1].is_path:
                     display[dr][dc-1] = '██'
                     colors[dr][dc-1] = PATH_COLOR
@@ -83,7 +84,6 @@ def print_maze(generator: MazeGenerator,
                 display[dr][dc] = '██'
                 colors[dr][dc] = EXIT_COLOR
 
-    # 3. Affichage final
     print("\n")
     for y in range(h):
         line = ""
@@ -98,6 +98,13 @@ def print_maze(generator: MazeGenerator,
 
 def interactive_loop(generator: MazeGenerator, entry: Tuple[int, int],
                      exit_coords: Tuple[int, int]) -> None:
+    """Starts the interactive terminal loop for user inputs.
+
+    Args:
+        generator (MazeGenerator): The maze instance to be manipulated.
+        entry (Tuple[int, int]): The starting coordinates.
+        exit_coords (Tuple[int, int]): The finishing coordinates.
+    """
     show_path = False
     color_idx = 0
 

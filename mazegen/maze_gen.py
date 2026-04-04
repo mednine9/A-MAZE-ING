@@ -1,7 +1,6 @@
 import sys
 from typing import Optional, Tuple
 from collections import deque
-from time import time
 from random import choice, random, seed as set_seed
 
 
@@ -15,8 +14,10 @@ class Cell:
         west (bool): True if the west wall is open, False if closed.
         is_start (bool): Flag indicating if this is the entrance cell.
         is_end (bool): Flag indicating if this is the exit cell.
-        is_path (bool): Flag indicating if this cell is part of the solution path.
-        is_ftwo (bool): Flag indicating if this cell is part of the '42' pattern.
+        is_path (bool): Flag indicating if this cell is part of the
+        solution path.
+        is_ftwo (bool): Flag indicating if this cell
+        is part of the '42' pattern.
         next_block (str): Stores the direction of the next cell in the path.
     """
 
@@ -29,11 +30,16 @@ class Cell:
         """Initializes a cell with its specific wall configuration and states.
 
         Args:
-            value (int, optional): The bitmask value representing closed walls. Defaults to 15 (all closed).
-            is_start (bool, optional): Sets the cell as the maze entrance. Defaults to False.
-            is_end (bool, optional): Sets the cell as the maze exit. Defaults to False.
-            is_path (bool, optional): Marks the cell as part of the solution. Defaults to False.
-            is_ftwo (bool, optional): Marks the cell as part of the '42' pattern. Defaults to False.
+            value (int, optional): The bitmask value representing closed walls.
+            Defaults to 15 (all closed).
+            is_start (bool, optional): Sets the cell as the maze entrance.
+            Defaults to False.
+            is_end (bool, optional): Sets the cell as the maze exit.
+            Defaults to False.
+            is_path (bool, optional): Marks the cell as part of the solution.
+            Defaults to False.
+            is_ftwo (bool, optional): Marks the cell as part of
+            the '42' pattern. Defaults to False.
         """
         self.north: bool = bool(value & 1)
         self.east: bool = bool(value & 2)
@@ -51,15 +57,18 @@ class Cell:
         """Opens a specific wall of the cell.
 
         Args:
-            direction (str): The cardinal direction of the wall to open ('north', 'south', 'east', 'west').
+            direction (str): The cardinal direction of the wall to open
+            ('north', 'south', 'east', 'west').
         """
         setattr(self, direction, True)
 
     def to_hex(self) -> str:
-        """Serializes the cell's wall configuration into a hexadecimal character.
+        """Serializes the cell's wall configuration
+        into a hexadecimal character.
 
         Returns:
-            str: A single uppercase hex character representing the closed walls.
+            str: A single uppercase hex character
+            representing the closed walls.
         """
         value = (self.north * 1
                  + self.east * 2
@@ -74,11 +83,13 @@ class MazeGenerator:
     Attributes:
         height (int): The number of rows in the maze.
         width (int): The number of columns in the maze.
-        entrance (Tuple[int, int]): The (row, col) coordinates of the start point.
-        departure (Tuple[int, int]): The (row, col) coordinates of the end point.
+        entrance (Tuple[int, int]): The (row, col)
+        coordinates of the start point.
+        departure (Tuple[int, int]): The (row, col)
+        coordinates of the end point.
         seed (Optional[int]): The seed for the random number generator.
-        perfect (bool): Determines if the maze should have only one unique path.
-        benchmark (dict): Stores execution times for generation and solving.
+        perfect (bool): Determines if the maze should have
+        only one unique path.
         gen_maze (list[list[Cell]]): The 2D grid containing the Cell objects.
     """
 
@@ -97,7 +108,8 @@ class MazeGenerator:
             entrance (Tuple[int, int]): Coordinates for the maze entry.
             departure (Tuple[int, int]): Coordinates for the maze exit.
             seed (Optional[int]): PRNG seed for reproducible generation.
-            perfect (bool): True for a perfect maze, False for an imperfect maze.
+            perfect (bool): True for a perfect maze, False
+            for an imperfect maze.
         """
         self.height = height
         self.width = width
@@ -105,10 +117,6 @@ class MazeGenerator:
         self.departure = departure
         self.seed = seed
         self.perfect = perfect
-        self.benchmark = {
-            "generation": 0.0,
-            "solution": 0.0
-        }
         self.gen_maze: list[list[Cell]] = []
 
     def generate_maze(self) -> list[list[Cell]]:
@@ -117,8 +125,6 @@ class MazeGenerator:
         Returns:
             list[list[Cell]]: The fully generated 2D grid of Cell objects.
         """
-        start_time = time()
-
         if self.seed is not None:
             set_seed(self.seed)
 
@@ -197,11 +203,11 @@ class MazeGenerator:
                         cell.open_wall(wall)
                         self.gen_maze[nr][nc].open_wall(opp_wall)
 
-        self.benchmark["generation"] = time() - start_time
         return self.gen_maze
 
     def _embed_42_pattern(self) -> None:
-        """Embeds the required '42' structural block in the center of the grid."""
+        """Embeds the required '42' structural
+        block in the center of the grid."""
         four_two = [
             [0, 1, 0, 1, 0, 0, 1, 1, 1, 0],
             [0, 1, 0, 1, 0, 0, 0, 0, 1, 0],
@@ -223,12 +229,13 @@ class MazeGenerator:
                     self.gen_maze[rw_off + r][cl_off + c].is_ftwo = True
 
     def maze_solver(self) -> list[Tuple[int, int]]:
-        """Finds the shortest valid path from the entrance to the departure using BFS.
+        """Finds the shortest valid path from the
+        entrance to the departure using BFS.
 
         Returns:
-            list[Tuple[int, int]]: An ordered list of coordinates representing the path.
+            list[Tuple[int, int]]: An ordered list of
+            coordinates representing the path.
         """
-        start_time = time()
         directions = {
             "east":  (0,  1),
             "west":  (0, -1),
@@ -285,8 +292,6 @@ class MazeGenerator:
             else:
                 maze[r][c].next_block = ""
 
-        self.benchmark["solution"] = time() - start_time
-
         return path
 
     def save_to_file(self, filename: str,
@@ -336,8 +341,6 @@ if __name__ == "__main__":
             print(cell.to_hex(), end="")
         print()
 
-    print(f"\nMaze generated in {gen.benchmark['generation']:.4f} seconds")
     path = gen.maze_solver()
-    print(f"Maze solved in {gen.benchmark['solution']:.4f} seconds")
-    print(f"Path length: {len(path)}")
+    print(f"\nPath length: {len(path)}")
     print("Test completed.")

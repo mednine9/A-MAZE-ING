@@ -97,13 +97,15 @@ class ConfigParser:
 
         Args:
             coord_str (str): The raw coordinate string from the configuration.
-            key_name (str): The name of the configuration key, used for error formatting.
+            key_name (str): The name of the
+            configuration key, used for error formatting.
 
         Returns:
             Tuple[int, int]: The parsed (column, row) coordinates.
 
         Raises:
-            ValueError: If the string is incorrectly formatted or contains non-integers.
+            ValueError: If the string is incorrectly
+            formatted or contains non-integers.
         """
         parts = coord_str.split(',')
         if len(parts) != 2:
