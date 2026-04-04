@@ -1,3 +1,4 @@
+import sys
 from typing import Optional, Tuple
 from collections import deque
 from time import time
@@ -56,7 +57,7 @@ class MazeGenerator:
             "generation": 0.0,
             "solution": 0.0
         }
-        self.gen_maze: list[list[Cell]] = [[]]
+        self.gen_maze: list[list[Cell]] = []
 
     def generate_maze(self) -> list[list[Cell]]:
         start_time = time()
@@ -76,11 +77,15 @@ class MazeGenerator:
         # 2. Embed the "42" pattern if the maze is large enough
         if not (self.width < 10 or self.height < 7):
             self._embed_42_pattern()
+        else:
+            print(
+                "Error: Maze size is too small to "
+                "embed the '42' pattern.", file=sys.stderr)
 
         # 3. Create a visited grid for fast lookups.
         # We pre-mark the "42" cells as True so the algorithm avoids them.
-        visited = [[self.gen_maze[r][c].is_ftwo for c in range(
-            self.width)] for r in range(self.height)]
+        visited = [[self.gen_maze[r][c].is_ftwo for c in range(self.width)]
+                   for r in range(self.height)]
 
         # 4. The Iterative Depth-First Search
         stack = [(ent_r, ent_c)]
@@ -116,20 +121,29 @@ class MazeGenerator:
                 stack.pop()
 
         if not self.perfect:
-            for r in range(self.height):
-                for c in range(self.width):
+            for r in range(1, self.height - 1):
+                for c in range(1, self.width - 1):
                     if self.gen_maze[r][c].is_ftwo:
                         continue
 
-                    if r + 1 < self.height and not self.gen_maze[r + 1][c].is_ftwo:
-                        if random() < 0.1:
-                            self.gen_maze[r][c].open_wall('south')
-                            self.gen_maze[r + 1][c].open_wall('north')
+                    cell = self.gen_maze[r][c]
+                    closed_walls = []
+                    directions_map = {
+                        'north': (r - 1, c, 'south'),
+                        'south': (r + 1, c, 'north'),
+                        'east':  (r, c + 1, 'west'),
+                        'west':  (r, c - 1, 'east')
+                    }
 
-                    if c + 1 < self.width and not self.gen_maze[r][c + 1].is_ftwo:
-                        if random() < 0.1:
-                            self.gen_maze[r][c].open_wall('east')
-                            self.gen_maze[r][c + 1].open_wall('west')
+                    for wall, (nr, nc, opp_wall) in directions_map.items():
+                        if not getattr(cell, wall):
+                            if not self.gen_maze[nr][nc].is_ftwo:
+                                closed_walls.append((wall, nr, nc, opp_wall))
+
+                    if len(closed_walls) >= 3 and random() < 0.4:
+                        wall, nr, nc, opp_wall = choice(closed_walls)
+                        cell.open_wall(wall)
+                        self.gen_maze[nr][nc].open_wall(opp_wall)
 
         self.benchmark["generation"] = time() - start_time
         return self.gen_maze
@@ -218,21 +232,23 @@ class MazeGenerator:
 
         return path
 
-    def save_to_file(self, filename: str, path_coords: list[Tuple[int, int]]) -> None:
+    def save_to_file(self, filename: str,
+                     path_coords: list[Tuple[int, int]]) -> None:
         try:
             with open(filename, 'w') as f:
                 for row in self.gen_maze:
                     line = "".join([cell.to_hex() for cell in row])
                     f.write(line + "\n")
-                
+
                 f.write("\n")
-                
+
                 ent_r, ent_c = self.entrance
                 ext_r, ext_c = self.departure
                 f.write(f"{ent_c},{ent_r}\n")
                 f.write(f"{ext_c},{ext_r}\n")
-                
-                dir_map = {(-1, 0): "N", (1, 0): "S", (0, 1): "E", (0, -1): "W"}
+
+                dir_map = {(-1, 0): "N", (1, 0): "S",
+                           (0, 1): "E", (0, -1): "W"}
                 path_str = ""
                 for i in range(len(path_coords) - 1):
                     r, c = path_coords[i]
@@ -241,6 +257,7 @@ class MazeGenerator:
                 f.write(path_str + "\n")
         except IOError as e:
             print(f"File error: {e}")
+
 
 if __name__ == "__main__":
     print("=== MazeGenerator Test ===")
@@ -258,4 +275,3 @@ if __name__ == "__main__":
     print(f"Maze solved in {gen.benchmark['solution']:.4f} seconds")
     print(f"Path length: {len(path)}")
     print("Test completed.")
-

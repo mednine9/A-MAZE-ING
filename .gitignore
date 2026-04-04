@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.mypy_cache/
+
+venv/
+
+mazegen/build/
+mazegen/dist/
+mazegen/*.egg-info/
+
+maze.txt
+file.txt

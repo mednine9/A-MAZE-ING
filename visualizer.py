@@ -5,19 +5,22 @@ from mazegen.maze_gen import MazeGenerator
 
 # Codes ANSI pour les couleurs
 RESET = "\033[0m"
-WALL_COLORS = ["\033[97m", "\033[94m", "\033[96m", "\033[92m"] # Blanc, Bleu, Cyan, Vert
+WALL_COLORS = ["\033[97m", "\033[94m", "\033[96m",
+               "\033[92m"]  # Blanc, Bleu, Cyan, Vert
 ENTRY_COLOR = "\033[95m"   # Magenta (Entrée)
 EXIT_COLOR = "\033[91m"    # Rouge (Sortie)
 PATH_COLOR = "\033[93m"    # Jaune Fluo (Chemin)
-PATTERN_COLOR = "\033[37m" # Gris clair (Le 42)
+PATTERN_COLOR = "\033[37m"  # Gris clair (Le 42)
 
-def print_maze(generator: MazeGenerator, show_path: bool, color_idx: int) -> None:
+
+def print_maze(generator: MazeGenerator,
+               show_path: bool, color_idx: int) -> None:
     h = generator.height * 2 + 1
     w = generator.width * 2 + 1
-    
+
     display = [['██' for _ in range(w)] for _ in range(h)]
     colors = [['' for _ in range(w)] for _ in range(h)]
-    
+
     wall_c = WALL_COLORS[color_idx % len(WALL_COLORS)]
     grid = generator.gen_maze
 
@@ -34,14 +37,23 @@ def print_maze(generator: MazeGenerator, show_path: bool, color_idx: int) -> Non
                     colors[dr-1][dc] = PATTERN_COLOR
                 if c > 0 and grid[r][c-1].is_ftwo:
                     colors[dr][dc-1] = PATTERN_COLOR
-                if r > 0 and c > 0 and grid[r-1][c].is_ftwo and grid[r][c-1].is_ftwo and grid[r-1][c-1].is_ftwo:
+                if (
+                    r > 0 and c > 0
+                    and grid[r-1][c].is_ftwo
+                    and grid[r][c-1].is_ftwo
+                    and grid[r-1][c-1].is_ftwo
+                ):
                     colors[dr-1][dc-1] = PATTERN_COLOR
             else:
                 display[dr][dc] = '  '
-                if cell.north: display[dr - 1][dc] = '  '
-                if cell.south: display[dr + 1][dc] = '  '
-                if cell.west:  display[dr][dc - 1] = '  '
-                if cell.east:  display[dr][dc + 1] = '  '
+                if cell.north:
+                    display[dr - 1][dc] = '  '
+                if cell.south:
+                    display[dr + 1][dc] = '  '
+                if cell.west:
+                    display[dr][dc - 1] = '  '
+                if cell.east:
+                    display[dr][dc + 1] = '  '
 
     # 2. Ajouter l'Entrée, la Sortie et le Chemin
     for r in range(generator.height):
@@ -54,7 +66,7 @@ def print_maze(generator: MazeGenerator, show_path: bool, color_idx: int) -> Non
                 if not cell.is_start and not cell.is_end:
                     display[dr][dc] = '██'
                     colors[dr][dc] = PATH_COLOR
-                
+
                 # Relier au Nord
                 if cell.north and r > 0 and grid[r-1][c].is_path:
                     display[dr-1][dc] = '██'
@@ -83,10 +95,12 @@ def print_maze(generator: MazeGenerator, show_path: bool, color_idx: int) -> Non
                 line += '  '
         print(line)
 
-def interactive_loop(generator: MazeGenerator, entry: Tuple[int, int], exit_coords: Tuple[int, int]) -> None:
+
+def interactive_loop(generator: MazeGenerator, entry: Tuple[int, int],
+                     exit_coords: Tuple[int, int]) -> None:
     show_path = False
     color_idx = 0
-    
+
     while True:
         print_maze(generator, show_path, color_idx)
         print("\n==== A-Maze-ing ====")
@@ -94,9 +108,9 @@ def interactive_loop(generator: MazeGenerator, entry: Tuple[int, int], exit_coor
         print("2. Show/Hide path from entry to exit")
         print("3. Rotate maze colors")
         print("4. Quit")
-        
+
         choice = input("Choice? (1-4): ")
-        
+
         if choice == '1':
             generator.generate_maze()
             generator.maze_solver()
