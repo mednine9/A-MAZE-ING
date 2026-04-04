@@ -93,7 +93,18 @@ class ConfigParser:
             self._fatal(f"Configuration Error: {ve}")
 
     def _parse_coords(self, coord_str: str, key_name: str) -> Tuple[int, int]:
-        """Helper to safely split an 'x,y' string into integer tuples."""
+        """Safely splits an 'x,y' string into integer tuples.
+
+        Args:
+            coord_str (str): The raw coordinate string from the configuration.
+            key_name (str): The name of the configuration key, used for error formatting.
+
+        Returns:
+            Tuple[int, int]: The parsed (column, row) coordinates.
+
+        Raises:
+            ValueError: If the string is incorrectly formatted or contains non-integers.
+        """
         parts = coord_str.split(',')
         if len(parts) != 2:
             raise ValueError(f"{key_name} must be in the format 'x,y'.")
