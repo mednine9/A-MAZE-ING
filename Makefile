@@ -5,7 +5,7 @@ CONFIG = config.txt
 
 install:
 	$(PIP) install --upgrade pip
-	$(PIP) install flake8 mypy build
+	$(PIP) install -r requirements.txt
 	$(PIP) install -e ./mazegen
 
 run:
@@ -24,4 +24,8 @@ lint:
 	flake8 .
 	mypy --warn-return-any --warn-unused-ignores --ignore-missing-imports --disallow-untyped-defs --check-untyped-defs .
 
-.PHONY: install run debug clean lint
+lint-strict:
+	flake8 .
+	mypy --strict .
+
+.PHONY: install run debug clean lint lint-strict

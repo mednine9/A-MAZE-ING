@@ -109,6 +109,8 @@ def interactive_loop(generator: MazeGenerator, entry: Tuple[int, int],
     color_idx = 0
 
     while True:
+        print("\033[2J\033[H", end="")
+        
         print_maze(generator, show_path, color_idx)
         print("\n==== A-Maze-ing ====")
         print("1. Re-generate a new maze")
@@ -116,7 +118,12 @@ def interactive_loop(generator: MazeGenerator, entry: Tuple[int, int],
         print("3. Rotate maze colors")
         print("4. Quit")
 
-        choice = input("Choice? (1-4): ")
+        try:
+            choice = input("Choice? (1-4): ").strip()
+        except (KeyboardInterrupt, EOFError):
+            print("\033[2J\033[H", end="")
+            print("Exiting A-Maze-ing...")
+            sys.exit(0)
 
         if choice == '1':
             generator.generate_maze()
@@ -126,4 +133,6 @@ def interactive_loop(generator: MazeGenerator, entry: Tuple[int, int],
         elif choice == '3':
             color_idx += 1
         elif choice == '4':
+            print("\033[2J\033[H", end="")
+            print("Exiting A-Maze-ing...")
             sys.exit(0)
