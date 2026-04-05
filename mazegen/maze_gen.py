@@ -1,3 +1,27 @@
+"""
+mazegen - Procedural Maze Generation Package
+
+This module provides the core logic for generating, solving, and saving mazes.
+
+Usage Example:
+    # 1. Instantiate and use the generator with custom parameters (size, seed, etc.)
+    from mazegen.maze_gen import MazeGenerator
+    generator = MazeGenerator(
+        height=21,
+        width=21,
+        entrance=(0, 0),
+        departure=(20, 20),
+        seed="custom_seed_value",
+        perfect=True
+    )
+
+    # 2. Access the generated structure (returns a 2D list of Cell objects)
+    maze_grid = generator.generate_maze()
+
+    # 3. Access the solution path (returns an ordered list of coordinates)
+    solution_path = generator.maze_solver()
+"""
+
 import sys
 from typing import Optional, Tuple
 from collections import deque
@@ -87,7 +111,7 @@ class MazeGenerator:
         coordinates of the start point.
         departure (Tuple[int, int]): The (row, col)
         coordinates of the end point.
-        seed (Optional[int]): The seed for the random number generator.
+        seed (Optional[str]): The seed for the random number generator.
         perfect (bool): Determines if the maze should have
         only one unique path.
         gen_maze (list[list[Cell]]): The 2D grid containing the Cell objects.
@@ -107,7 +131,7 @@ class MazeGenerator:
             width (int): The width of the maze grid.
             entrance (Tuple[int, int]): Coordinates for the maze entry.
             departure (Tuple[int, int]): Coordinates for the maze exit.
-            seed (Optional[int]): PRNG seed for reproducible generation.
+            seed (Optional[str]): PRNG seed for reproducible generation.
             perfect (bool): True for a perfect maze, False
             for an imperfect maze.
         """
@@ -340,7 +364,7 @@ if __name__ == "__main__":
     print("=== MazeGenerator Test ===")
     gen = MazeGenerator(height=21, width=21,
                         entrance=(0, 0), departure=(20, 20),
-                        seed=42, perfect=True)
+                        seed="42", perfect=True)
     maze = gen.generate_maze()
     for row in maze:
         for cell in row:
